@@ -1,7 +1,6 @@
 const dotenv = require('dotenv');
 const path = require('path');
 const restify = require('restify');
-
 const { BotFrameworkAdapter } = require('botbuilder');
 const { FanBot } = require('./bot');
 
@@ -13,12 +12,6 @@ dotenv.config({ path: ENV_FILE });
 const server = restify.createServer();
 server.use(restify.plugins.bodyParser());
 
-server.listen(process.env.port || process.env.PORT || 3978, () => {
-    console.log(`\n${server.name} listening to ${server.url}`);
-    console.log('\nGet Bot Framework Emulator: https://aka.ms/botframework-emulator');
-    console.log('\nTo talk to your bot, open the emulator select "Open Bot"');
-});
-
 // Create adapter.
 const adapter = new BotFrameworkAdapter({
     appId: process.env.MicrosoftAppId,
@@ -26,7 +19,7 @@ const adapter = new BotFrameworkAdapter({
 });
 
 // Catch-all for errors.
-const onTurnErrorHandler = async (context, error) => {
+adapter.onTurnError = async (context, error) => {
     console.error(`\n [onTurnError] unhandled error: ${error}`);
     await context.sendTraceActivity(
         'OnTurnError Trace',
@@ -38,34 +31,21 @@ const onTurnErrorHandler = async (context, error) => {
     await context.sendActivity('To continue to run this bot, please fix the bot source code.');
 };
 
-// Set the onTurnError for the singleton BotFrameworkAdapter.
-adapter.onTurnError = onTurnErrorHandler;
-
 // Create the main dialog.
 const myBot = new FanBot();
 
 // Listen for incoming requests.
-server.post('/api/messages', async (req, res, next) => {
-    await adapter.process(req, res, async (context) => {
-        // Route to main dialog.
+server.post('/api/messages', (req, res) => {
+    adapter.processActivity(req, res, async (context) => {
         await myBot.run(context);
+    }).catch(err => {
+        console.error('Error processing activity:', err);
     });
-    next();
 });
 
-// Listen for Upgrade requests for Streaming.
-server.on('upgrade', async (req, socket, head) => {
-    // Create an adapter scoped to this WebSocket connection to allow storing session data.
-    const streamingAdapter = new BotFrameworkAdapter({
-        appId: process.env.MicrosoftAppId,
-        appPassword: process.env.MicrosoftAppPassword
-    });
-    // Set onTurnError for the BotFrameworkAdapter created for each connection.
-    streamingAdapter.onTurnError = onTurnErrorHandler;
-
-    await streamingAdapter.process(req, socket, head, async (context) => {
-        // After connecting via WebSocket, run this logic for every request sent over
-        // the WebSocket connection.
-        await myBot.run(context);
-    });
+// Start the server
+server.listen(process.env.port || process.env.PORT || 3978, () => {
+    console.log(`\n${server.name} listening to ${server.url}`);
+    console.log('\nGet Bot Framework Emulator: https://aka.ms/botframework-emulator');
+    console.log('\nTo talk to your bot, open the emulator select "Open Bot"');
 });
