@@ -57,11 +57,13 @@ adapter.onTurnError = onTurnErrorHandler;
 const myBot = new FanBot();
 
 // Listen for incoming requests.
-server.post('/api/messages', (req, res) => {
-    adapter.processActivity(req, res, async (context) => {
+// Listen for incoming requests.
+server.post('/api/messages', async (req, res, next) => {
+    await adapter.process(req, res, async (context) => {
         // Route to main dialog.
         await myBot.run(context);
     });
+    next();
 });
 
 // Listen for Upgrade requests for Streaming.
