@@ -1,0 +1,17 @@
+{
+  "name": "fanbot",
+  "version": "1.0.0",
+  "description": "A bot that provides encouragement and support",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "botbuilder": "^4.22.3",
+    "dotenv": "^16.4.5",
+    "restify": "^11.1.0"
+  }
+}
