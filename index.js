@@ -35,11 +35,15 @@ adapter.onTurnError = async (context, error) => {
 const myBot = new FanBot();
 
 // Listen for incoming requests.
-server.post('/api/messages', async (req, res, next) => {
-    await adapter.processActivity(req, res, async (context) => {
+server.post('/api/messages', (req, res, next) => {
+    adapter.processActivity(req, res, async (context) => {
         await myBot.run(context);
+    }).then(() => {
+        next();
+    }).catch((err) => {
+        console.error('Error processing activity:', err);
+        next(err);
     });
-    return next();
 });
 
 // Start the server
