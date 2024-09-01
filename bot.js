@@ -1,5 +1,5 @@
 const { ActivityHandler, MessageFactory } = require('botbuilder');
-const { OpenAIClient, AzureKeyCredential} = require('@azure/openai');
+const { OpenAIClient, AzureKeyCredential } = require('@azure/openai');
 
 class FanBot extends ActivityHandler {
     constructor() {

@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@azure/openai": "^2.0.0-beta.1",
-    "botbuilder": "^4.19.3",
+    "botbuilder": "^4.23.0",
     "dotenv": "^16.3.1",
     "restify": "^11.1.0"
   }
