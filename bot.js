@@ -8,7 +8,10 @@ class FanBot extends ActivityHandler {
         // Initialize OpenAI client
         this.openAIClient = new OpenAIClient(
             process.env.AZURE_OPENAI_ENDPOINT,
-            process.env.AZURE_OPENAI_KEY
+            {
+                key: process.env.AZURE_OPENAI_KEY,
+                apiVersion: "2024-02-15-preview"  // Use the latest API version available
+            }
         );
 
         this.onMessage(async (context, next) => {
