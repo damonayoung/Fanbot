@@ -1,14 +1,14 @@
 const { ActivityHandler, MessageFactory } = require('botbuilder');
-const { OpenAIClient } = require('@azure/openai');
+const OpenAI = require('@azure/openai');
 
 class FanBot extends ActivityHandler {
     constructor() {
         super();
 
         // Initialize OpenAI client
-        this.openAIClient = new OpenAIClient(
+        this.openAIClient = new OpenAI.OpenAIClient(
             process.env.AZURE_OPENAI_ENDPOINT,
-            { key: process.env.AZURE_OPENAI_KEY }
+            new OpenAI.AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
         );
 
         this.onMessage(async (context, next) => {
