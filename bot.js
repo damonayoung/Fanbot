@@ -1,14 +1,14 @@
 const { ActivityHandler, MessageFactory } = require('botbuilder');
 const { AzureOpenAIClient, AzureKeyCredential } = require('@azure/openai');
 
-console.log('OpenAI package exports:', { OpenAIClient, AzureKeyCredential });
+console.log('OpenAI package exports:', { AzureOpenAIClient, AzureKeyCredential });
 
 class FanBot extends ActivityHandler {
     constructor() {
         super();
 
         // Initialize OpenAI client
-        this.openAIClient = new AzureOpenAIClient(
+        this.AzureOpenAIClient = new AzureOpenAIClient(
             process.env.AZURE_OPENAI_ENDPOINT,
             new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
         );
