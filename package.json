@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "botbuilder": "^4.22.3",
-    "dotenv": "^16.4.5",
+    "botbuilder": "^4.19.3",
+    "dotenv": "^16.3.1",
     "restify": "^11.1.0"
   }
 }
