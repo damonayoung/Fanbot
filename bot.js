@@ -1,3 +1,4 @@
+import { AzureOpenAIClient, AzureKeyCredential } from '@azure/openai';
 const { ActivityHandler, MessageFactory } = require('botbuilder');
 const { AzureOpenAIClient, AzureKeyCredential } = require('@azure/openai');
 
