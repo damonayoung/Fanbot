@@ -8,10 +8,8 @@ class FanBot extends ActivityHandler {
     constructor() {
         super();
 
-        // Initialize OpenAI client
-        import { AzureOpenAIClient, AzureKeyCredential } from '@azure/openai';
-        
-        this.AzureOpenAIClient = new AzureOpenAIClient(
+        // Initialize OpenAI client        
+        this.openAIClient = new AzureOpenAIClient(
             process.env.AZURE_OPENAI_ENDPOINT,
             new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
         );
