@@ -1,18 +1,16 @@
 const { ActivityHandler, MessageFactory } = require('botbuilder');
-const { OpenAIClient } = require('@azure/openai');
-
 const openai = require('@azure/openai');
-console.log('OpenAIClient methods:', Object.getOwnPropertyNames(openai.OpenAIClient.prototype));
-console.log('OpenAIClient static properties:', Object.getOwnPropertyNames(openai.OpenAIClient));
+
+console.log('OpenAI package exports:', openai);
 
 class FanBot extends ActivityHandler {
     constructor() {
         super();
 
         // Initialize OpenAI client
-        this.openAIClient = new OpenAIClient(
+        this.openAIClient = new openai.OpenAIClient(
             process.env.AZURE_OPENAI_ENDPOINT,
-            process.env.AZURE_OPENAI_KEY
+            new openai.AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
         );
 
         this.onMessage(async (context, next) => {
@@ -39,13 +37,13 @@ class FanBot extends ActivityHandler {
             { role: "user", content: userMessage }
         ];
 
-        const result = await this.openAIClient.getChatCompletions(
+        const response = await this.openAIClient.getChatCompletions(
             process.env.AZURE_OPENAI_DEPLOYMENT,
             messages,
             { maxTokens: 800 }
         );
 
-        return result.choices[0].message.content;
+        return response.choices[0].message.content;
     }
 }
 
