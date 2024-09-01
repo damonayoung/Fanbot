@@ -1,16 +1,19 @@
 const { ActivityHandler, MessageFactory } = require('botbuilder');
 const { OpenAIClient } = require('@azure/openai');
 
+const openai = require('@azure/openai');
+console.log('OpenAIClient methods:', Object.getOwnPropertyNames(openai.OpenAIClient.prototype));
+console.log('OpenAIClient static properties:', Object.getOwnPropertyNames(openai.OpenAIClient));
+
 class FanBot extends ActivityHandler {
     constructor() {
         super();
 
         // Initialize OpenAI client
-        this.openAIClient = OpenAIClient.fromConfig({
-            endpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            apiKey: process.env.AZURE_OPENAI_KEY,
-            apiVersion: "2024-02-15-preview"  // Use the latest API version available
-        });
+        this.openAIClient = new OpenAIClient(
+            process.env.AZURE_OPENAI_ENDPOINT,
+            process.env.AZURE_OPENAI_KEY
+        );
 
         this.onMessage(async (context, next) => {
             const userMessage = context.activity.text;
@@ -27,16 +30,7 @@ class FanBot extends ActivityHandler {
             await next();
         });
 
-        this.onMembersAdded(async (context, next) => {
-            const membersAdded = context.activity.membersAdded;
-            const welcomeText = 'Welcome to FanBot! I\'m here to provide personalized support and encouragement. How can I help you today?';
-            for (let cnt = 0; cnt < membersAdded.length; ++cnt) {
-                if (membersAdded[cnt].id !== context.activity.recipient.id) {
-                    await context.sendActivity(MessageFactory.text(welcomeText, welcomeText));
-                }
-            }
-            await next();
-        });
+        // ... rest of the constructor
     }
 
     async generateOpenAIResponse(userMessage) {
