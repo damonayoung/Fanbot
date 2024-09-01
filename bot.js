@@ -1,5 +1,5 @@
 const { ActivityHandler, MessageFactory } = require('botbuilder');
-const { OpenAIClient } = require("@azure/openai");
+const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
 
 class FanBot extends ActivityHandler {
     constructor() {
@@ -8,7 +8,7 @@ class FanBot extends ActivityHandler {
         // Initialize OpenAI client
         this.openAIClient = new OpenAIClient(
             process.env.AZURE_OPENAI_ENDPOINT,
-            { key: process.env.AZURE_OPENAI_KEY }
+            new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
         );
 
         this.onMessage(async (context, next) => {
@@ -20,7 +20,7 @@ class FanBot extends ActivityHandler {
                 await context.sendActivity(MessageFactory.text(response, response));
             } catch (error) {
                 console.error('Error generating response:', error);
-                await context.sendActivity('I apologize, I'm having trouble generating a response right now. Can you please try again?');
+                await context.sendActivity("I apologize, I'm having trouble generating a response right now. Can you please try again?");
             }
 
             await next();
