@@ -1,42 +1,17 @@
 const { ActivityHandler, MessageFactory } = require('botbuilder');
-const { AzureOpenAI } = require('@azure/openai');
+const openai = require('@azure/openai');
 
 class FanBot extends ActivityHandler {
     constructor() {
         super();
 
         // Initialize Azure OpenAI client
-        this.openAIClient = new AzureOpenAI({
-            endpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            apiKey: process.env.AZURE_OPENAI_KEY,
-            deploymentId: process.env.AZURE_OPENAI_DEPLOYMENT
-        });
+        this.openAIClient = new openai.OpenAIClient(
+            process.env.AZURE_OPENAI_ENDPOINT,
+            new openai.AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
+        );
 
-        this.onMessage(async (context, next) => {
-            const userMessage = context.activity.text;
-
-            try {
-                // Generate response using Azure OpenAI
-                const response = await this.generateOpenAIResponse(userMessage);
-                await context.sendActivity(MessageFactory.text(response, response));
-            } catch (error) {
-                console.error('Error generating response:', error);
-                await context.sendActivity("I apologize, I'm having trouble generating a response right now. Can you please try again?");
-            }
-
-            await next();
-        });
-
-        this.onMembersAdded(async (context, next) => {
-            const membersAdded = context.activity.membersAdded;
-            const welcomeText = 'Welcome to FanBot! I\'m here to provide personalized support and encouragement. How can I help you today?';
-            for (let cnt = 0; cnt < membersAdded.length; ++cnt) {
-                if (membersAdded[cnt].id !== context.activity.recipient.id) {
-                    await context.sendActivity(MessageFactory.text(welcomeText, welcomeText));
-                }
-            }
-            await next();
-        });
+        // ... rest of your constructor
     }
 
     async generateOpenAIResponse(userMessage) {
