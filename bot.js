@@ -1,5 +1,5 @@
 const { ActivityHandler, MessageFactory } = require('botbuilder');
-const { OpenAIClient, AzureKeyCredential } = require('@azure/ai-openai');
+const { OpenAIClient, AzureKeyCredential } = require('@azure/openai');
 
 console.log('OpenAI package exports:', { OpenAIClient, AzureKeyCredential });
 
