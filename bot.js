@@ -1,18 +1,19 @@
-
 const { ActivityHandler, MessageFactory } = require('botbuilder');
-const { AzureOpenAIClient, AzureKeyCredential } = require('@azure/openai');
+const { AzureOpenAI } = require('openai');
+const dotenv = require('dotenv');
+dotenv.config();
 
-console.log('OpenAI package exports:', { AzureOpenAIClient, AzureKeyCredential });
+const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
+const apiKey = process.env.AZURE_OPENAI_API_KEY;
+const deployment = process.env.AZURE_OPENAI_DEPLOYMENT;
+const apiVersion = "2024-05-01-preview";
 
 class FanBot extends ActivityHandler {
     constructor() {
         super();
 
-        // Initialize OpenAI client        
-        this.openAIClient = new AzureOpenAIClient(
-            process.env.AZURE_OPENAI_ENDPOINT,
-            new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
-        );
+        // Initialize OpenAI client
+        this.openAIClient = new AzureOpenAI({ endpoint, apiKey, apiVersion, deployment });
 
         this.onMessage(async (context, next) => {
             const userMessage = context.activity.text;
@@ -29,7 +30,16 @@ class FanBot extends ActivityHandler {
             await next();
         });
 
-        // ... rest of the constructor
+        this.onMembersAdded(async (context, next) => {
+            const membersAdded = context.activity.membersAdded;
+            const welcomeText = 'Welcome to FanBot! I\'m here to provide personalized support and encouragement. How can I help you today?';
+            for (let cnt = 0; cnt < membersAdded.length; ++cnt) {
+                if (membersAdded[cnt].id !== context.activity.recipient.id) {
+                    await context.sendActivity(MessageFactory.text(welcomeText, welcomeText));
+                }
+            }
+            await next();
+        });
     }
 
     async generateOpenAIResponse(userMessage) {
@@ -38,13 +48,12 @@ class FanBot extends ActivityHandler {
             { role: "user", content: userMessage }
         ];
 
-        const response = await this.openAIClient.getChatCompletions(
-            process.env.AZURE_OPENAI_DEPLOYMENT,
-            messages,
-            { maxTokens: 800 }
-        );
+        const result = await this.openAIClient.chat.completions.create({
+            messages: messages,
+            model: deployment,
+        });
 
-        return response.choices[0].message.content;
+        return result.choices[0].message.content;
     }
 }
 
