@@ -13,19 +13,10 @@ const conversationHistories = {};
 
 // Preloaded questions
 const preloadedQuestions = [
-    "What’s something you’re working towards right now that’s really important to you?",
-    "When you’re feeling down, what usually helps lift your spirits?",
-    "What’s one challenge you’re currently facing that you could use some encouragement for?",
-    "What are some of your greatest strengths or qualities you’re proud of?",
-    "Do you prefer direct and motivational words, or something more gentle and reassuring?",
-    "Is there a specific goal or milestone you’re striving to reach that you’d like support on?",
-    "Are there any particular people or situations in your life that are causing you stress?",
-    "What’s a recent accomplishment you’re proud of, no matter how small?",
-    "How do you usually like to celebrate your successes, big or small?",
-    "What does it mean to you to have a best friend who supports and encourages you?",
-    "How do you like to be encouraged or supported?",
-    "Who are some of your role models and what are they like?",
-    "What are some of favorite musicians or songs for when you need encouragement?"
+    "What are your goals for today?",
+    "How can I assist you in achieving your goals?",
+    "Is there anything specific you need help with?",
+    "What’s something you’re working towards right now that’s really important to you?"
 ];
 
 class FanBot extends ActivityHandler {
@@ -85,12 +76,16 @@ class FanBot extends ActivityHandler {
     async generateOpenAIResponse(userId) {
         const messages = conversationHistories[userId];
 
-        const result = await this.openAIClient.chat.completions.create({
-            messages: messages,
-            model: deployment,
-        });
-
-        return result;
+        try {
+            const result = await this.openAIClient.chat.completions.create({
+                messages: messages,
+                model: deployment,
+            });
+            return result;
+        } catch (error) {
+            console.error('Error calling OpenAI API:', error);
+            throw error;
+        }
     }
 }
 
